@@ -1,8 +1,10 @@
-use std::collections::HashMap;
-use std::fs::File;
-use std::io::{BufReader, Read};
-use std::path::Path;
-use std::rc::Rc;
+use std::{
+    collections::HashMap,
+    fs::File,
+    io::{BufReader, Read},
+    path::Path,
+    sync::Arc,
+};
 
 use xml::reader::{EventReader, XmlEvent};
 
@@ -65,9 +67,9 @@ impl Document {
 
                     if let Some(mut parent) = elements.pop() {
                         if let Some(ref mut children) = parent.children {
-                            children.push(Rc::new(child_node));
+                            children.push(Arc::new(child_node));
                         } else {
-                            parent.children = Some(vec![Rc::new(child_node)]);
+                            parent.children = Some(vec![Arc::new(child_node)]);
                         }
 
                         elements.push(parent);
@@ -76,7 +78,7 @@ impl Document {
                             root: Element {
                                 node_index: 0,
                                 tag_name: "[root]".to_string(),
-                                children: Some(vec![Rc::new(child_node)]),
+                                children: Some(vec![Arc::new(child_node)]),
                                 attr_map: HashMap::new(),
                                 text: String::new(),
                             },

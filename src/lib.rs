@@ -29,20 +29,24 @@ extern crate xml;
 mod document;
 mod selector;
 
-pub use self::document::{Document, DocumentError};
-pub use self::selector::{CompoundSelector, MatchType, Scope, Selector, UnexpectedTokenError};
+pub use self::{
+    document::{Document, DocumentError},
+    selector::{CompoundSelector, MatchType, Scope, Selector, UnexpectedTokenError},
+};
 
-use std::collections::HashMap;
-use std::iter::{empty, once};
-use std::marker::PhantomData;
-use std::rc::Rc;
+use std::{
+    collections::HashMap,
+    iter::{empty, once},
+    marker::PhantomData,
+    sync::Arc,
+};
 
 /// Represents a single element in the DOM tree.
 #[derive(Clone, Debug)]
 pub struct Element {
     node_index: usize,
     tag_name: String,
-    children: Option<Vec<Rc<Element>>>,
+    children: Option<Vec<Arc<Element>>>,
     attr_map: HashMap<String, String>,
     text: String,
 }
