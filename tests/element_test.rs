@@ -1,14 +1,16 @@
-use rquery::Document;
+use arquery::Document;
 
 fn new_document() -> Document {
-    Document::new_from_xml_string(r#"
+    Document::new_from_xml_string(
+        r#"
 <?xml version="1.0" encoding="UTF-8"?>
 <main type="simple">
   This is some text
 </main>
-"#).unwrap()
+"#,
+    )
+    .unwrap()
 }
-
 
 #[test]
 fn it_knows_its_tag_name() {
@@ -30,7 +32,6 @@ fn it_knows_its_attributes() {
 fn it_knows_its_inner_text_contents() {
     let document = new_document();
 
-
     let element = document.select("main").unwrap();
     assert_eq!(element.text().trim(), "This is some text");
 }
@@ -38,7 +39,7 @@ fn it_knows_its_inner_text_contents() {
 #[test]
 fn it_knows_its_node_indices() {
     let document = new_document();
-    
+
     let element = document.select("main").unwrap();
     assert_eq!(element.node_index(), 1);
 }

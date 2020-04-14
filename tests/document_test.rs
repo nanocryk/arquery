@@ -1,14 +1,17 @@
-use rquery::Document;
+use arquery::Document;
 
 fn new_document() -> Document {
-    Document::new_from_xml_string(r#"
+    Document::new_from_xml_string(
+        r#"
 <?xml version="1.0" encoding="UTF-8"?>
 <body>
   <one/>
   <two/>
   <three/>
 </body>
-"#).unwrap()
+"#,
+    )
+    .unwrap()
 }
 
 #[test]

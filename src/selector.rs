@@ -1,5 +1,5 @@
-use std::str::Chars;
 use std::iter::Peekable;
+use std::str::Chars;
 
 /// An error which is returned when parsing a selector encounters an unexpected
 /// token
@@ -50,11 +50,11 @@ pub enum MatchType {
 macro_rules! expect_token {
     ($token_option: expr, $token: expr) => {
         match $token_option {
-            Some($token) => { },
+            Some($token) => {}
             Some(token) => return Err(UnexpectedTokenError(token)),
             None => return Err(UnexpectedTokenError(' ')),
         }
-    }
+    };
 }
 
 #[inline]
@@ -76,7 +76,10 @@ fn extract_valid_string(chars: &mut Peekable<Chars>) -> Result<String, Unexpecte
     extract_valid_string_until_token(chars, ' ')
 }
 
-fn extract_valid_string_until_token(chars: &mut Peekable<Chars>, stop_token: char) -> Result<String, UnexpectedTokenError> {
+fn extract_valid_string_until_token(
+    chars: &mut Peekable<Chars>,
+    stop_token: char,
+) -> Result<String, UnexpectedTokenError> {
     let mut string = String::new();
 
     while let Some(&c) = chars.peek() {
@@ -102,18 +105,19 @@ impl Selector {
         let mut chars = string.chars().peekable();
         while let Some(&c) = chars.peek() {
             match Selector::next_selector(c, &mut chars) {
-                Ok(selector) =>
-                    selectors.push(selector),
+                Ok(selector) => selectors.push(selector),
 
-                Err(err) =>
-                    return Err(err),
+                Err(err) => return Err(err),
             }
         }
 
         return Ok(selectors);
     }
 
-    fn next_selector(c: char, chars: &mut Peekable<Chars>) -> Result<Selector, UnexpectedTokenError> {
+    fn next_selector(
+        c: char,
+        chars: &mut Peekable<Chars>,
+    ) -> Result<Selector, UnexpectedTokenError> {
         if non_digit(c) {
             Selector::create_tag_name(chars)
         } else if c == '#' {
@@ -131,45 +135,40 @@ impl Selector {
 
     fn create_id(chars: &mut Peekable<Chars>) -> Result<Selector, UnexpectedTokenError> {
         match chars.next() {
-            Some('#') =>
-                return extract_valid_string(chars).map(|s| Selector::Id(s)),
+            Some('#') => return extract_valid_string(chars).map(|s| Selector::Id(s)),
 
-            Some(token) =>
-                return Err(UnexpectedTokenError(token)),
+            Some(token) => return Err(UnexpectedTokenError(token)),
 
-            None =>
-                return Err(UnexpectedTokenError(' ')),
+            None => return Err(UnexpectedTokenError(' ')),
         }
     }
 
     fn create_attribute(chars: &mut Peekable<Chars>) -> Result<Selector, UnexpectedTokenError> {
         expect_token!(chars.next(), '[');
 
-        extract_valid_string_until_token(chars, '=').and_then(|attribute| {
-            Ok((attribute, MatchType::Equals))
-        }).and_then(|(attribute, match_type)| {
-            let result = if Some(&'"') == chars.peek() {
-                chars.next().unwrap();
-                let result = extract_valid_string_until_token(chars, '"');
-                expect_token!(chars.next(), ']');
+        extract_valid_string_until_token(chars, '=')
+            .and_then(|attribute| Ok((attribute, MatchType::Equals)))
+            .and_then(|(attribute, match_type)| {
+                let result = if Some(&'"') == chars.peek() {
+                    chars.next().unwrap();
+                    let result = extract_valid_string_until_token(chars, '"');
+                    expect_token!(chars.next(), ']');
 
-                result
-            } else {
-                extract_valid_string_until_token(chars, ']')
-            };
+                    result
+                } else {
+                    extract_valid_string_until_token(chars, ']')
+                };
 
-            result.map(|value| {
-                Selector::Attribute(attribute, match_type, value)
+                result.map(|value| Selector::Attribute(attribute, match_type, value))
             })
-        })
     }
 }
 
-struct SelectorParts<I: Iterator<Item=String>> {
+struct SelectorParts<I: Iterator<Item = String>> {
     inner_iter: I,
 }
 
-impl<I: Iterator<Item=String>> Iterator for SelectorParts<I> {
+impl<I: Iterator<Item = String>> Iterator for SelectorParts<I> {
     type Item = (Scope, String);
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -186,28 +185,28 @@ impl<I: Iterator<Item=String>> Iterator for SelectorParts<I> {
 impl CompoundSelector {
     /// Parses the string and converts it to a list of `CompoundSelector`s.
     pub fn parse(selector: &str) -> Result<Vec<CompoundSelector>, UnexpectedTokenError> {
-        let normalized_selector = selector.split(">")
-            .collect::<Vec<&str>>()
-            .join(" > ");
+        let normalized_selector = selector.split(">").collect::<Vec<&str>>().join(" > ");
 
         let selector_parts = SelectorParts {
-            inner_iter: normalized_selector.split_whitespace().into_iter().map(|s| s.to_string()),
+            inner_iter: normalized_selector
+                .split_whitespace()
+                .into_iter()
+                .map(|s| s.to_string()),
         };
 
-        selector_parts
-           .fold(Ok(Vec::new()), |result_so_far, (scope, part)| {
-               if let Ok(mut compound_selectors) = result_so_far {
-                   Selector::create_list(&part).map(|parts| {
-                       compound_selectors.push(CompoundSelector {
-                           scope: scope,
-                           parts: parts
-                       });
+        selector_parts.fold(Ok(Vec::new()), |result_so_far, (scope, part)| {
+            if let Ok(mut compound_selectors) = result_so_far {
+                Selector::create_list(&part).map(|parts| {
+                    compound_selectors.push(CompoundSelector {
+                        scope: scope,
+                        parts: parts,
+                    });
 
-                       compound_selectors
-                   })
-               } else {
-                   result_so_far
-               }
-           })
+                    compound_selectors
+                })
+            } else {
+                result_so_far
+            }
+        })
     }
 }

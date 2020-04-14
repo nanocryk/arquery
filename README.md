@@ -1,19 +1,14 @@
-# rquery
+# arquery
 
-[![Build Status](https://travis-ci.org/yggie/rquery.svg?branch=master)](https://travis-ci.org/yggie/rquery)
-[![docs](https://img.shields.io/badge/documentation-rust_beta-6495ed.svg?style=flat-square)](https://yggie.github.io/rquery/rquery)
-[![crates.io](https://img.shields.io/crates/v/rquery.svg)](https://crates.io/crates/rquery)
-[![license](https://img.shields.io/crates/l/rquery.svg)](/LICENSE)
-
-A simple implementation of a HTML/XML DOM tree which allows simple operations
+An async-compatible implementation of a HTML/XML DOM tree which allows simple operations
 like querying by CSS selectors, makes dealing with XML files less painful.
+
+Fork of [rquery](https://github.com/yggie/rquery) with `Arc` instead of `Rc`.
 
 ## Example
 
 ```rust
-extern crate rquery;
-
-use rquery::Document;
+use arquery::Document;
 
 fn main() {
   let document = Document::new_from_xml_file("tests/fixtures/sample.xml").unwrap();

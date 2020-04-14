@@ -1,12 +1,12 @@
-use std::io::{ BufReader, Read };
-use std::fs::File;
-use std::rc::Rc;
-use std::path::Path;
 use std::collections::HashMap;
+use std::fs::File;
+use std::io::{BufReader, Read};
+use std::path::Path;
+use std::rc::Rc;
 
-use xml::reader::{ EventReader, XmlEvent };
+use xml::reader::{EventReader, XmlEvent};
 
-use super::{ Element, SelectError };
+use super::{Element, SelectError};
 
 /// The various errors that can happen when creating a document.
 #[derive(Clone, Debug)]
@@ -31,13 +31,22 @@ impl Document {
 
         for event in event_reader {
             match event {
-                Ok(XmlEvent::StartElement { ref name, ref attributes, .. }) => {
-                    let attr_map = attributes.iter()
-                        .fold(HashMap::new(), |mut hash_map, attribute| {
-                            hash_map.insert(attribute.name.local_name.clone(), attribute.value.clone());
+                Ok(XmlEvent::StartElement {
+                    ref name,
+                    ref attributes,
+                    ..
+                }) => {
+                    let attr_map =
+                        attributes
+                            .iter()
+                            .fold(HashMap::new(), |mut hash_map, attribute| {
+                                hash_map.insert(
+                                    attribute.name.local_name.clone(),
+                                    attribute.value.clone(),
+                                );
 
-                            return hash_map;
-                        });
+                                return hash_map;
+                            });
 
                     elements.push(Element {
                         node_index: next_node_index,
@@ -47,16 +56,18 @@ impl Document {
                         text: String::new(),
                     });
                     next_node_index = next_node_index + 1;
-                },
+                }
 
-                Ok(XmlEvent::EndElement { ref name, .. }) if elements.last().unwrap().tag_name() == name.local_name  => {
+                Ok(XmlEvent::EndElement { ref name, .. })
+                    if elements.last().unwrap().tag_name() == name.local_name =>
+                {
                     let child_node = elements.pop().unwrap();
 
                     if let Some(mut parent) = elements.pop() {
                         if let Some(ref mut children) = parent.children {
                             children.push(Rc::new(child_node));
                         } else {
-                            parent.children = Some(vec!(Rc::new(child_node)));
+                            parent.children = Some(vec![Rc::new(child_node)]);
                         }
 
                         elements.push(parent);
@@ -65,27 +76,27 @@ impl Document {
                             root: Element {
                                 node_index: 0,
                                 tag_name: "[root]".to_string(),
-                                children: Some(vec!(Rc::new(child_node))),
+                                children: Some(vec![Rc::new(child_node)]),
                                 attr_map: HashMap::new(),
                                 text: String::new(),
-                            }
+                            },
                         });
                     }
-                },
+                }
 
                 Ok(XmlEvent::Characters(string)) => {
                     elements.last_mut().unwrap().text.push_str(&string);
-                },
+                }
 
                 Ok(XmlEvent::Whitespace(string)) => {
                     elements.last_mut().unwrap().text.push_str(&string);
-                },
+                }
 
                 Err(error) => {
                     return Err(DocumentError::ParseError(error.to_string()));
-                },
+                }
 
-                Ok(_) => { },
+                Ok(_) => {}
             }
         }
 
@@ -106,7 +117,9 @@ impl Document {
 
             Document::new_from_xml_stream(reader)
         } else {
-            Err(DocumentError::UnableToOpenFile(path.to_str().unwrap().to_string()))
+            Err(DocumentError::UnableToOpenFile(
+                path.to_str().unwrap().to_string(),
+            ))
         }
     }
 
@@ -116,7 +129,10 @@ impl Document {
     }
 
     /// Searches the document for elements matching the given CSS selector.
-    pub fn select_all<'a>(&'a self, selector: &str) -> Result<Box<Iterator<Item=&'a Element> + 'a>, SelectError> {
+    pub fn select_all<'a>(
+        &'a self,
+        selector: &str,
+    ) -> Result<Box<dyn Iterator<Item = &'a Element> + 'a>, SelectError> {
         self.root.select_all(selector)
     }
 
@@ -128,7 +144,8 @@ impl Document {
 
 #[test]
 fn it_assigns_node_indices_in_monotonically_increasing_order() {
-    let document = Document::new_from_xml_string(r#"
+    let document = Document::new_from_xml_string(
+        r#"
 <?xml version="1.0" encoding="UTF-8"?>
 <sample type="simple">
   This is some text
@@ -164,7 +181,9 @@ fn it_assigns_node_indices_in_monotonically_increasing_order() {
     </div>
   </div>
 </sample>
-"#).unwrap();
+"#,
+    )
+    .unwrap();
 
     assert_eq!(document.root.node_index, 0);
 

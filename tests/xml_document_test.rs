@@ -1,15 +1,17 @@
-use rquery::Document;
+use arquery::Document;
 
 #[test]
 fn it_captures_the_correct_number_of_elements() {
-    let result = Document::new_from_xml_string(r#"
+    let result = Document::new_from_xml_string(
+        r#"
 <?xml version="1.0" encoding="UTF-8"?>
 <body>
   <one/>
   <two/>
   <three/>
 </body>
-"#);
+"#,
+    );
 
     assert!(result.is_ok());
 }

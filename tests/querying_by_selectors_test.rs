@@ -1,7 +1,8 @@
-use rquery::{ Document, Element, SelectError, UnexpectedTokenError };
+use arquery::{Document, Element, SelectError, UnexpectedTokenError};
 
 pub fn new_document() -> Document {
-    Document::new_from_xml_string(r#"
+    Document::new_from_xml_string(
+        r#"
 <?xml version="1.0" encoding="UTF-8"?>
 <sample type="simple">
   This is some text
@@ -37,7 +38,9 @@ pub fn new_document() -> Document {
     </div>
   </div>
 </sample>
-"#).unwrap()
+"#,
+    )
+    .unwrap()
 }
 
 #[test]
@@ -58,7 +61,8 @@ fn it_supports_the_nested_tag_selector() {
 
     assert_eq!(elements.len(), 2);
 
-    let element_tag_names: Vec<String> = elements.iter()
+    let element_tag_names: Vec<String> = elements
+        .iter()
         .map(|el| el.tag_name().to_string())
         .collect();
     assert_eq!(element_tag_names, vec!("title", "title"));
@@ -68,13 +72,16 @@ fn it_supports_the_nested_tag_selector() {
 fn it_supports_nesting_selectors() {
     let document = new_document();
 
-    let elements: Vec<&Element> = document.select_all("related").unwrap()
+    let elements: Vec<&Element> = document
+        .select_all("related")
+        .unwrap()
         .flat_map(|element| element.select_all("title").unwrap())
         .collect();
 
     assert_eq!(elements.len(), 2);
 
-    let element_tag_names: Vec<String> = elements.iter()
+    let element_tag_names: Vec<String> = elements
+        .iter()
         .map(|el| el.tag_name().to_string())
         .collect();
     assert_eq!(element_tag_names, vec!("title", "title"));
