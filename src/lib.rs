@@ -38,7 +38,6 @@ use std::{
     collections::HashMap,
     iter::{empty, once},
     marker::PhantomData,
-    sync::Arc,
 };
 
 /// Represents a single element in the DOM tree.
@@ -46,7 +45,7 @@ use std::{
 pub struct Element {
     node_index: usize,
     tag_name: String,
-    children: Option<Vec<Arc<Element>>>,
+    children: Option<Vec<Element>>,
     attr_map: HashMap<String, String>,
     text: String,
 }

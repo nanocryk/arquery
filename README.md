@@ -3,7 +3,7 @@
 An async-compatible implementation of a HTML/XML DOM tree which allows simple operations
 like querying by CSS selectors, makes dealing with XML files less painful.
 
-Fork of [rquery](https://github.com/yggie/rquery) with `Arc` instead of `Rc`.
+Fork of [rquery](https://github.com/yggie/rquery) without reference-counting.
 
 ## Example
 

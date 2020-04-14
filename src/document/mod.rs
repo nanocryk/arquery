@@ -3,7 +3,6 @@ use std::{
     fs::File,
     io::{BufReader, Read},
     path::Path,
-    sync::Arc,
 };
 
 use xml::reader::{EventReader, XmlEvent};
@@ -67,9 +66,9 @@ impl Document {
 
                     if let Some(mut parent) = elements.pop() {
                         if let Some(ref mut children) = parent.children {
-                            children.push(Arc::new(child_node));
+                            children.push(child_node);
                         } else {
-                            parent.children = Some(vec![Arc::new(child_node)]);
+                            parent.children = Some(vec![child_node]);
                         }
 
                         elements.push(parent);
@@ -78,7 +77,7 @@ impl Document {
                             root: Element {
                                 node_index: 0,
                                 tag_name: "[root]".to_string(),
-                                children: Some(vec![Arc::new(child_node)]),
+                                children: Some(vec![child_node]),
                                 attr_map: HashMap::new(),
                                 text: String::new(),
                             },
