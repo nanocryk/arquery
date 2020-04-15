@@ -1,12 +1,15 @@
 [package]
 name = "arquery"
 version = "0.1.0"
-authors = ["nanocryk", "Bryan Yap <bryan.yap.mh@gmail.com>"]
 description = "An async fork of rquery"
+authors = ["nanocryk", "Bryan Yap <bryan.yap.mh@gmail.com>"]
+edition = "2018"
+
+repository = "https://github.com/nanocryk/arquery"
+documentation = "https://docs.rs/arquery/"
 readme = "README.md"
 keywords = ["xml", "DOM", "jquery"]
 license = "MIT"
-edition = "2018"
 
 [dependencies]
 xml-rs = "0.7"

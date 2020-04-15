@@ -1,6 +1,9 @@
 # arquery
 
-An async-compatible implementation of a HTML/XML DOM tree which allows simple operations
+[![arquery crate](https://img.shields.io/crates/v/arquery.svg)](https://crates.io/crates/arquery)
+[![arquery documentation](https://docs.rs/arquery/badge.svg)](https://docs.rs/arquery)
+
+A `Sync + Send` simple implementation of a HTML/XML DOM tree which allows simple operations
 like querying by CSS selectors, makes dealing with XML files less painful.
 
 Fork of [rquery](https://github.com/yggie/rquery) without reference-counting.
